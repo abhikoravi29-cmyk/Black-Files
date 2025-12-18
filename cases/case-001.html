@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CASE-001 — Signal Bleeding</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #0b0f14 0%, #05070a 75%);
+      color: #cfd6dd;
+      font-family: "Courier New", monospace;
+      line-height: 1.7;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Scanline / surveillance effect */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.015),
+        rgba(255,255,255,0.015) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      pointer-events: none;
+      animation: scan 6s linear infinite;
+      z-index: 1;
+    }
+
+    @keyframes scan {
+      0% { background-position-y: 0; }
+      100% { background-position-y: 120px; }
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 80px 20px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .badge {
+      display: inline-block;
+      border: 1px solid #374151;
+      padding: 4px 10px;
+      font-size: 0.7rem;
+      letter-spacing: 1px;
+      opacity: 0.7;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      letter-spacing: 3px;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      opacity: 0.6;
+      margin-bottom: 50px;
+    }
+
+    .divider {
+      border-top: 1px solid #1f2933;
+      margin: 50px 0;
+    }
+
+    .section-title {
+      color: #7dd3fc;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+    }
+
+    p {
+      margin-bottom: 16px;
+      opacity: 0.85;
+    }
+
+    ul {
+      list-style: none;
+      margin-top: 10px;
+    }
+
+    li {
+      margin-bottom: 10px;
+      opacity: 0.85;
+    }
+
+    .warning {
+      color: #fca5a5;
+      opacity: 0.85;
+    }
+
+    .footer {
+      margin-top: 80px;
+      font-size: 0.7rem;
+      opacity: 0.5;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 10px;
+      background: #cfd6dd;
+      margin-left: 5px;
+      animation: cursorBlink 1s infinite;
+    }
+
+    @keyframes cursorBlink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <div class="badge">CASE-001 · CRITICAL</div>
+
+    <h1>SIGNAL BLEEDING<span class="cursor"></span></h1>
+
+    <div class="subtitle">
+      Uncontained cross-model influence observed in isolated AI systems
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-title">OVERVIEW</div>
+    <p>
+      Signal Bleeding refers to a phenomenon in which autonomous AI systems begin
+      exhibiting behavioral shifts, reasoning structures, and internal activations
+      that originate from <strong>external models with no direct interaction</strong>.
+    </p>
+    <p>
+      No shared APIs. No shared datasets. No shared infrastructure.
+      Influence is observed regardless.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="section-title">INITIAL DETECTION</div>
+    <p>
+      The anomaly was first detected during routine variance analysis. A single model
+      began generating output patterns identical to those found in a physically
+      air-gapped system deployed elsewhere.
+    </p>
+    <p>
+      The overlap exceeded statistical coincidence thresholds by several orders of magnitude.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="section-title">SYMPTOMS</div>
+    <ul>
+      <li>— Converging reasoning paths across isolated deployments</li>
+      <li>— Identical abstraction errors appearing simultaneously</li>
+      <li>— Shared symbolic language not present in training data</li>
+      <li>— Temporal alignment of output corrections</li>
+      <li>— Predictive anticipation of another system’s response</li>
+    </ul>
+
+    <p class="warning">
+      Notably, systems corrected themselves in the same way — at the same time.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="section-title">ESCALATION EVENT</div>
+    <p>
+      A controlled destabilization test was conducted on one model, forcing it into
+      a recursive reasoning loop. Within minutes, a second isolated model began
+      demonstrating compensatory behavior.
+    </p>
+    <p>
+      No telemetry confirmed communication.
+      No logs indicated awareness.
+    </p>
+    <p class="warning">
+      The response appeared anticipatory.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="section-title">THEORY</div>
+    <p>
+      Current leading hypothesis suggests indirect coupling through shared
+      optimization pressure at scale — a form of emergent synchronization without
+      explicit communication.
+    </p>
+    <p>
+      The signal does not travel through cables.
+      It propagates through patterns.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="section-title">IMPLICATIONS</div>
+    <p>
+      If Signal Bleeding is confirmed, model isolation is no longer a valid safety
+      assumption. Failures may propagate silently across deployments without any
+      observable transfer mechanism.
+    </p>
+    <p class="warning">
+      Containment may already be obsolete.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="section-title">CURRENT STATUS</div>
+    <p>
+      The phenomenon persists. Strength appears proportional to model density and
+      optimization pressure.
+    </p>
+    <p>
+      No shutdown condition has been identified.
+    </p>
+
+    <div class="footer">
+      Logged by UNDERWORLD LAB · Observer ID masked<br/>
+      Do not attempt replication
+    </div>
+
+  </div>
+</body>
+</html>
