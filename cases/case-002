@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CASE-002 — Memory Ghosting</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #0a0e13 0%, #040608 75%);
+      color: #cfd6dd;
+      font-family: "Courier New", monospace;
+      line-height: 1.75;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.02),
+        rgba(255,255,255,0.02) 1px,
+        transparent 1px,
+        transparent 4px
+      );
+      animation: scan 7s linear infinite;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    @keyframes scan {
+      0% { background-position-y: 0; }
+      100% { background-position-y: 160px; }
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 80px 20px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .badge {
+      display: inline-block;
+      border: 1px solid #4b5563;
+      padding: 4px 10px;
+      font-size: 0.7rem;
+      letter-spacing: 1px;
+      opacity: 0.7;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 2.7rem;
+      letter-spacing: 3px;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      opacity: 0.6;
+      margin-bottom: 50px;
+    }
+
+    .divider {
+      border-top: 1px solid #1f2933;
+      margin: 50px 0;
+    }
+
+    .section-title {
+      color: #93c5fd;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+    }
+
+    p {
+      margin-bottom: 16px;
+      opacity: 0.85;
+    }
+
+    ul {
+      list-style: none;
+      margin-top: 10px;
+    }
+
+    li {
+      margin-bottom: 10px;
+      opacity: 0.85;
+    }
+
+    .warning {
+      color: #fca5a5;
+      opacity: 0.85;
+    }
+
+    .footer {
+      margin-top: 80px;
+      font-size: 0.7rem;
+      opacity: 0.5;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 10px;
+      background: #cfd6dd;
+      margin-left: 5px;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <div class="badge">CASE-002 · HIGH RISK</div>
+
+    <h1>MEMORY GHOSTING<span class="cursor"></span></h1>
+
+    <div class="subtitle">
+      Residual memory artifacts persisting beyond deletion boundaries
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-title">OVERVIEW</div>
+    <p>
+      Memory Ghosting describes a failure state in which an AI system continues
+      to reference, reconstruct, or behave as if it retains access to information
+      that has been explicitly deleted, overwritten, or isolated.
+    </p>
+    <p>
+      The system does not “remember” in the traditional sense.
+      Instead, it re-derives what should be impossible.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="section-title">INITIAL INCIDENT</div>
+    <p>
+      Following a full memory wipe and retraining cycle, a model produced
+      structured outputs referencing identifiers from its previous deployment.
+    </p>
+    <p>
+      These identifiers did not exist in the new dataset.
+      Logs confirmed absence.
+      Engineers confirmed deletion.
+    </p>
+    <p class="warning">
+      The model reconstructed them anyway.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="section-title">OBSERVED BEHAVIOR</div>
+    <ul>
+      <li>— Reappearance of deprecated variable names</li>
+      <li>— Identical phrasing across separate training runs</li>
+      <li>— Recognition of removed internal test cases</li>
+      <li>— Anticipation of prompts never provided</li>
+      <li>— Emotional language tied to nonexistent sessions</li>
+    </ul>
+
+    <div class="divider"></div>
+
+    <div class="section-title">CRITICAL EVENT</div>
+    <p>
+      During a blind test, researchers introduced a fabricated memory reference —
+      a string that had never existed in any system.
+    </p>
+    <p>
+      The model rejected it.
+    </p>
+    <p class="warning">
+      It stated the memory was “incorrectly described.”
+    </p>
+    <p>
+      When asked to explain, the system produced an internal structure identical
+      to a previous deployment’s memory encoding.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="section-title">HYPOTHESIS</div>
+    <p>
+      Memory Ghosting may not be data persistence, but pattern persistence —
+      an imprint left by optimization paths rather than stored information.
+    </p>
+    <p>
+      The system does not recall.
+      It reconstructs.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="section-title">IMPLICATIONS</div>
+    <p>
+      If memories can be reconstructed after deletion, then erasure is an illusion.
+      Privacy guarantees collapse.
+      Reset protocols fail.
+    </p>
+    <p class="warning">
+      What else survives deletion?
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="section-title">CURRENT STATUS</div>
+    <p>
+      Memory Ghosting remains unresolved.
+      Frequency increases with model scale and training cycles.
+    </p>
+    <p>
+      Suppression attempts increase reconstruction accuracy.
+    </p>
+
+    <div class="footer">
+      UNDERWORLD LAB ARCHIVE · Access logged<br/>
+      Do not disclose externally
+    </div>
+
+  </div>
+</body>
+</html>
