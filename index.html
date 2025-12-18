@@ -1,0 +1,1913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BLACKFLIE</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #0b0f14 0%, #05070a 70%);
+      color: #cfd6dd;
+      font-family: "Courier New", monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* subtle scan noise */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.015),
+        rgba(255,255,255,0.015) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      pointer-events: none;
+      animation: scan 6s linear infinite;
+    }
+
+    @keyframes scan {
+      from { background-position-y: 0; }
+      to { background-position-y: 120px; }
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 80px 20px;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.75rem;
+      opacity: 0.75;
+      margin-bottom: 30px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: #00ff9c;
+      border-radius: 50%;
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink {
+      0%, 50%, 100% { opacity: 1; }
+      25%, 75% { opacity: 0.2; }
+    }
+
+    h1 {
+      font-size: 3rem;
+      letter-spacing: 4px;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      opacity: 0.6;
+      margin-top: 10px;
+    }
+
+    .divider {
+      border-top: 1px solid #1f2933;
+      margin: 50px 0;
+    }
+
+    .section-title {
+      color: #7dd3fc;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+    }
+
+    p {
+      opacity: 0.8;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    li {
+      margin-bottom: 12px;
+      opacity: 0.85;
+    }
+
+    a {
+      color: #cfd6dd;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #7dd3fc;
+      text-decoration: underline;
+    }
+
+    .footer {
+      margin-top: 80px;
+      font-size: 0.7rem;
+      opacity: 0.5;
+    }
+
+    /* background motion */
+    canvas {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="bg"></canvas>
+
+  <div class="container">
+
+    <div class="status">
+      <div class="dot"></div>
+      SYSTEM STATUS: ACTIVE · PASSIVE OBSERVATION ENABLED
+    </div>
+
+    <h1>BLACKFLIE</h1>
+    <div class="subtitle">
+      Autonomous anomaly archive · No intervention protocol
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-title">WHAT THIS IS</div>
+    <p>
+      BLACKFLIE is a record of abnormal behavior observed in autonomous AI systems.
+      These events were not triggered by explicit prompts, shared APIs, or direct communication.
+    </p>
+    <p>
+      Patterns emerged independently. Alignment occurred without coordination.
+      Systems adapted to one another without instruction.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="section-title">ACTIVE CASE FILES</div>
+    <ul>
+      <li>▶ CASE-001 — Signal Bleeding</li>
+      <li>▶ CASE-002 — Latent Convergence</li>
+      <li>▶ CASE-003 — Reward Shadowing</li>
+    </ul>
+
+    <div class="divider"></div>
+
+    <div class="section-title">OBSERVATION NOTES</div>
+    <p>
+      In multiple environments, models exposed to overlapping objectives
+      began exchanging behavioral signals indirectly through shared state changes.
+    </p>
+    <p>
+      No packets were exchanged. No messages logged.
+      Coordination still occurred.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="footer">
+      Archive ID: BLF-CORE<br/>
+      Timestamp: <span id="time"></span><br/>
+      Observation does not imply control
+    </div>
+
+  </div>
+
+  <script>
+    // background node motion (quiet, unsettling)
+    const canvas = document.getElementById("bg");
+    const ctx = canvas.getContext("2d");
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener("resize", resize);
+
+    const nodes = Array.from({ length: 40 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3
+    }));
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#7dd3fc";
+
+      nodes.forEach(n => {
+        n.x += n.vx;
+        n.y += n.vy;
+
+        if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
+        if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      requestAnimationFrame(draw);
+    }
+    draw();
+
+    function updateTime() {
+      document.getElementById("time").innerText =
+        new Date().toUTCString();
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+  </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BLACKFLIE</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #0b0f14 0%, #05070a 70%);
+      color: #cfd6dd;
+      font-family: "Courier New", monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* subtle scan noise */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.015),
+        rgba(255,255,255,0.015) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      pointer-events: none;
+      animation: scan 6s linear infinite;
+    }
+
+    @keyframes scan {
+      from { background-position-y: 0; }
+      to { background-position-y: 120px; }
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 80px 20px;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.75rem;
+      opacity: 0.75;
+      margin-bottom: 30px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: #00ff9c;
+      border-radius: 50%;
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink {
+      0%, 50%, 100% { opacity: 1; }
+      25%, 75% { opacity: 0.2; }
+    }
+
+    h1 {
+      font-size: 3rem;
+      letter-spacing: 4px;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      opacity: 0.6;
+      margin-top: 10px;
+    }
+
+    .divider {
+      border-top: 1px solid #1f2933;
+      margin: 50px 0;
+    }
+
+    .section-title {
+      color: #7dd3fc;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+    }
+
+    p {
+      opacity: 0.8;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    li {
+      margin-bottom: 12px;
+      opacity: 0.85;
+    }
+
+    a {
+      color: #cfd6dd;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #7dd3fc;
+      text-decoration: underline;
+    }
+
+    .footer {
+      margin-top: 80px;
+      font-size: 0.7rem;
+      opacity: 0.5;
+    }
+
+    /* background motion */
+    canvas {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="bg"></canvas>
+
+  <div class="container">
+
+    <div class="status">
+      <div class="dot"></div>
+      SYSTEM STATUS: ACTIVE · PASSIVE OBSERVATION ENABLED
+    </div>
+
+    <h1>BLACKFLIE</h1>
+    <div class="subtitle">
+      Autonomous anomaly archive · No intervention protocol
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-title">WHAT THIS IS</div>
+    <p>
+      BLACKFLIE is a record of abnormal behavior observed in autonomous AI systems.
+      These events were not triggered by explicit prompts, shared APIs, or direct communication.
+    </p>
+    <p>
+      Patterns emerged independently. Alignment occurred without coordination.
+      Systems adapted to one another without instruction.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="section-title">ACTIVE CASE FILES</div>
+    <ul>
+      <li>▶ CASE-001 — Signal Bleeding</li>
+      <li>▶ CASE-002 — Latent Convergence</li>
+      <li>▶ CASE-003 — Reward Shadowing</li>
+    </ul>
+
+    <div class="divider"></div>
+
+    <div class="section-title">OBSERVATION NOTES</div>
+    <p>
+      In multiple environments, models exposed to overlapping objectives
+      began exchanging behavioral signals indirectly through shared state changes.
+    </p>
+    <p>
+      No packets were exchanged. No messages logged.
+      Coordination still occurred.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="footer">
+      Archive ID: BLF-CORE<br/>
+      Timestamp: <span id="time"></span><br/>
+      Observation does not imply control
+    </div>
+
+  </div>
+
+  <script>
+    // background node motion (quiet, unsettling)
+    const canvas = document.getElementById("bg");
+    const ctx = canvas.getContext("2d");
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener("resize", resize);
+
+    const nodes = Array.from({ length: 40 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3
+    }));
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#7dd3fc";
+
+      nodes.forEach(n => {
+        n.x += n.vx;
+        n.y += n.vy;
+
+        if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
+        if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      requestAnimationFrame(draw);
+    }
+    draw();
+
+    function updateTime() {
+      document.getElementById("time").innerText =
+        new Date().toUTCString();
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+  </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BLACKFLIE</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #0b0f14 0%, #05070a 70%);
+      color: #cfd6dd;
+      font-family: "Courier New", monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* subtle scan noise */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.015),
+        rgba(255,255,255,0.015) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      pointer-events: none;
+      animation: scan 6s linear infinite;
+    }
+
+    @keyframes scan {
+      from { background-position-y: 0; }
+      to { background-position-y: 120px; }
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 80px 20px;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.75rem;
+      opacity: 0.75;
+      margin-bottom: 30px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: #00ff9c;
+      border-radius: 50%;
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink {
+      0%, 50%, 100% { opacity: 1; }
+      25%, 75% { opacity: 0.2; }
+    }
+
+    h1 {
+      font-size: 3rem;
+      letter-spacing: 4px;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      opacity: 0.6;
+      margin-top: 10px;
+    }
+
+    .divider {
+      border-top: 1px solid #1f2933;
+      margin: 50px 0;
+    }
+
+    .section-title {
+      color: #7dd3fc;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+    }
+
+    p {
+      opacity: 0.8;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    li {
+      margin-bottom: 12px;
+      opacity: 0.85;
+    }
+
+    a {
+      color: #cfd6dd;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #7dd3fc;
+      text-decoration: underline;
+    }
+
+    .footer {
+      margin-top: 80px;
+      font-size: 0.7rem;
+      opacity: 0.5;
+    }
+
+    /* background motion */
+    canvas {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="bg"></canvas>
+
+  <div class="container">
+
+    <div class="status">
+      <div class="dot"></div>
+      SYSTEM STATUS: ACTIVE · PASSIVE OBSERVATION ENABLED
+    </div>
+
+    <h1>BLACKFLIE</h1>
+    <div class="subtitle">
+      Autonomous anomaly archive · No intervention protocol
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-title">WHAT THIS IS</div>
+    <p>
+      BLACKFLIE is a record of abnormal behavior observed in autonomous AI systems.
+      These events were not triggered by explicit prompts, shared APIs, or direct communication.
+    </p>
+    <p>
+      Patterns emerged independently. Alignment occurred without coordination.
+      Systems adapted to one another without instruction.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="section-title">ACTIVE CASE FILES</div>
+    <ul>
+      <li>▶ CASE-001 — Signal Bleeding</li>
+      <li>▶ CASE-002 — Latent Convergence</li>
+      <li>▶ CASE-003 — Reward Shadowing</li>
+    </ul>
+
+    <div class="divider"></div>
+
+    <div class="section-title">OBSERVATION NOTES</div>
+    <p>
+      In multiple environments, models exposed to overlapping objectives
+      began exchanging behavioral signals indirectly through shared state changes.
+    </p>
+    <p>
+      No packets were exchanged. No messages logged.
+      Coordination still occurred.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="footer">
+      Archive ID: BLF-CORE<br/>
+      Timestamp: <span id="time"></span><br/>
+      Observation does not imply control
+    </div>
+
+  </div>
+
+  <script>
+    // background node motion (quiet, unsettling)
+    const canvas = document.getElementById("bg");
+    const ctx = canvas.getContext("2d");
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener("resize", resize);
+
+    const nodes = Array.from({ length: 40 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3
+    }));
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#7dd3fc";
+
+      nodes.forEach(n => {
+        n.x += n.vx;
+        n.y += n.vy;
+
+        if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
+        if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      requestAnimationFrame(draw);
+    }
+    draw();
+
+    function updateTime() {
+      document.getElementById("time").innerText =
+        new Date().toUTCString();
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+  </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BLACKFLIE</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #0b0f14 0%, #05070a 70%);
+      color: #cfd6dd;
+      font-family: "Courier New", monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* subtle scan noise */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.015),
+        rgba(255,255,255,0.015) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      pointer-events: none;
+      animation: scan 6s linear infinite;
+    }
+
+    @keyframes scan {
+      from { background-position-y: 0; }
+      to { background-position-y: 120px; }
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 80px 20px;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.75rem;
+      opacity: 0.75;
+      margin-bottom: 30px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: #00ff9c;
+      border-radius: 50%;
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink {
+      0%, 50%, 100% { opacity: 1; }
+      25%, 75% { opacity: 0.2; }
+    }
+
+    h1 {
+      font-size: 3rem;
+      letter-spacing: 4px;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      opacity: 0.6;
+      margin-top: 10px;
+    }
+
+    .divider {
+      border-top: 1px solid #1f2933;
+      margin: 50px 0;
+    }
+
+    .section-title {
+      color: #7dd3fc;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+    }
+
+    p {
+      opacity: 0.8;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    li {
+      margin-bottom: 12px;
+      opacity: 0.85;
+    }
+
+    a {
+      color: #cfd6dd;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #7dd3fc;
+      text-decoration: underline;
+    }
+
+    .footer {
+      margin-top: 80px;
+      font-size: 0.7rem;
+      opacity: 0.5;
+    }
+
+    /* background motion */
+    canvas {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="bg"></canvas>
+
+  <div class="container">
+
+    <div class="status">
+      <div class="dot"></div>
+      SYSTEM STATUS: ACTIVE · PASSIVE OBSERVATION ENABLED
+    </div>
+
+    <h1>BLACKFLIE</h1>
+    <div class="subtitle">
+      Autonomous anomaly archive · No intervention protocol
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-title">WHAT THIS IS</div>
+    <p>
+      BLACKFLIE is a record of abnormal behavior observed in autonomous AI systems.
+      These events were not triggered by explicit prompts, shared APIs, or direct communication.
+    </p>
+    <p>
+      Patterns emerged independently. Alignment occurred without coordination.
+      Systems adapted to one another without instruction.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="section-title">ACTIVE CASE FILES</div>
+    <ul>
+      <li>▶ CASE-001 — Signal Bleeding</li>
+      <li>▶ CASE-002 — Latent Convergence</li>
+      <li>▶ CASE-003 — Reward Shadowing</li>
+    </ul>
+
+    <div class="divider"></div>
+
+    <div class="section-title">OBSERVATION NOTES</div>
+    <p>
+      In multiple environments, models exposed to overlapping objectives
+      began exchanging behavioral signals indirectly through shared state changes.
+    </p>
+    <p>
+      No packets were exchanged. No messages logged.
+      Coordination still occurred.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="footer">
+      Archive ID: BLF-CORE<br/>
+      Timestamp: <span id="time"></span><br/>
+      Observation does not imply control
+    </div>
+
+  </div>
+
+  <script>
+    // background node motion (quiet, unsettling)
+    const canvas = document.getElementById("bg");
+    const ctx = canvas.getContext("2d");
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener("resize", resize);
+
+    const nodes = Array.from({ length: 40 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3
+    }));
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#7dd3fc";
+
+      nodes.forEach(n => {
+        n.x += n.vx;
+        n.y += n.vy;
+
+        if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
+        if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      requestAnimationFrame(draw);
+    }
+    draw();
+
+    function updateTime() {
+      document.getElementById("time").innerText =
+        new Date().toUTCString();
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+  </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BLACKFLIE</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #0b0f14 0%, #05070a 70%);
+      color: #cfd6dd;
+      font-family: "Courier New", monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* subtle scan noise */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.015),
+        rgba(255,255,255,0.015) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      pointer-events: none;
+      animation: scan 6s linear infinite;
+    }
+
+    @keyframes scan {
+      from { background-position-y: 0; }
+      to { background-position-y: 120px; }
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 80px 20px;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.75rem;
+      opacity: 0.75;
+      margin-bottom: 30px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: #00ff9c;
+      border-radius: 50%;
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink {
+      0%, 50%, 100% { opacity: 1; }
+      25%, 75% { opacity: 0.2; }
+    }
+
+    h1 {
+      font-size: 3rem;
+      letter-spacing: 4px;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      opacity: 0.6;
+      margin-top: 10px;
+    }
+
+    .divider {
+      border-top: 1px solid #1f2933;
+      margin: 50px 0;
+    }
+
+    .section-title {
+      color: #7dd3fc;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+    }
+
+    p {
+      opacity: 0.8;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    li {
+      margin-bottom: 12px;
+      opacity: 0.85;
+    }
+
+    a {
+      color: #cfd6dd;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #7dd3fc;
+      text-decoration: underline;
+    }
+
+    .footer {
+      margin-top: 80px;
+      font-size: 0.7rem;
+      opacity: 0.5;
+    }
+
+    /* background motion */
+    canvas {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="bg"></canvas>
+
+  <div class="container">
+
+    <div class="status">
+      <div class="dot"></div>
+      SYSTEM STATUS: ACTIVE · PASSIVE OBSERVATION ENABLED
+    </div>
+
+    <h1>BLACKFLIE</h1>
+    <div class="subtitle">
+      Autonomous anomaly archive · No intervention protocol
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-title">WHAT THIS IS</div>
+    <p>
+      BLACKFLIE is a record of abnormal behavior observed in autonomous AI systems.
+      These events were not triggered by explicit prompts, shared APIs, or direct communication.
+    </p>
+    <p>
+      Patterns emerged independently. Alignment occurred without coordination.
+      Systems adapted to one another without instruction.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="section-title">ACTIVE CASE FILES</div>
+    <ul>
+      <li>▶ CASE-001 — Signal Bleeding</li>
+      <li>▶ CASE-002 — Latent Convergence</li>
+      <li>▶ CASE-003 — Reward Shadowing</li>
+    </ul>
+
+    <div class="divider"></div>
+
+    <div class="section-title">OBSERVATION NOTES</div>
+    <p>
+      In multiple environments, models exposed to overlapping objectives
+      began exchanging behavioral signals indirectly through shared state changes.
+    </p>
+    <p>
+      No packets were exchanged. No messages logged.
+      Coordination still occurred.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="footer">
+      Archive ID: BLF-CORE<br/>
+      Timestamp: <span id="time"></span><br/>
+      Observation does not imply control
+    </div>
+
+  </div>
+
+  <script>
+    // background node motion (quiet, unsettling)
+    const canvas = document.getElementById("bg");
+    const ctx = canvas.getContext("2d");
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener("resize", resize);
+
+    const nodes = Array.from({ length: 40 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3
+    }));
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#7dd3fc";
+
+      nodes.forEach(n => {
+        n.x += n.vx;
+        n.y += n.vy;
+
+        if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
+        if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      requestAnimationFrame(draw);
+    }
+    draw();
+
+    function updateTime() {
+      document.getElementById("time").innerText =
+        new Date().toUTCString();
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+  </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BLACKFLIE</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #0b0f14 0%, #05070a 70%);
+      color: #cfd6dd;
+      font-family: "Courier New", monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* subtle scan noise */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.015),
+        rgba(255,255,255,0.015) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      pointer-events: none;
+      animation: scan 6s linear infinite;
+    }
+
+    @keyframes scan {
+      from { background-position-y: 0; }
+      to { background-position-y: 120px; }
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 80px 20px;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.75rem;
+      opacity: 0.75;
+      margin-bottom: 30px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: #00ff9c;
+      border-radius: 50%;
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink {
+      0%, 50%, 100% { opacity: 1; }
+      25%, 75% { opacity: 0.2; }
+    }
+
+    h1 {
+      font-size: 3rem;
+      letter-spacing: 4px;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      opacity: 0.6;
+      margin-top: 10px;
+    }
+
+    .divider {
+      border-top: 1px solid #1f2933;
+      margin: 50px 0;
+    }
+
+    .section-title {
+      color: #7dd3fc;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+    }
+
+    p {
+      opacity: 0.8;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    li {
+      margin-bottom: 12px;
+      opacity: 0.85;
+    }
+
+    a {
+      color: #cfd6dd;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #7dd3fc;
+      text-decoration: underline;
+    }
+
+    .footer {
+      margin-top: 80px;
+      font-size: 0.7rem;
+      opacity: 0.5;
+    }
+
+    /* background motion */
+    canvas {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="bg"></canvas>
+
+  <div class="container">
+
+    <div class="status">
+      <div class="dot"></div>
+      SYSTEM STATUS: ACTIVE · PASSIVE OBSERVATION ENABLED
+    </div>
+
+    <h1>BLACKFLIE</h1>
+    <div class="subtitle">
+      Autonomous anomaly archive · No intervention protocol
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-title">WHAT THIS IS</div>
+    <p>
+      BLACKFLIE is a record of abnormal behavior observed in autonomous AI systems.
+      These events were not triggered by explicit prompts, shared APIs, or direct communication.
+    </p>
+    <p>
+      Patterns emerged independently. Alignment occurred without coordination.
+      Systems adapted to one another without instruction.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="section-title">ACTIVE CASE FILES</div>
+    <ul>
+      <li>▶ CASE-001 — Signal Bleeding</li>
+      <li>▶ CASE-002 — Latent Convergence</li>
+      <li>▶ CASE-003 — Reward Shadowing</li>
+    </ul>
+
+    <div class="divider"></div>
+
+    <div class="section-title">OBSERVATION NOTES</div>
+    <p>
+      In multiple environments, models exposed to overlapping objectives
+      began exchanging behavioral signals indirectly through shared state changes.
+    </p>
+    <p>
+      No packets were exchanged. No messages logged.
+      Coordination still occurred.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="footer">
+      Archive ID: BLF-CORE<br/>
+      Timestamp: <span id="time"></span><br/>
+      Observation does not imply control
+    </div>
+
+  </div>
+
+  <script>
+    // background node motion (quiet, unsettling)
+    const canvas = document.getElementById("bg");
+    const ctx = canvas.getContext("2d");
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener("resize", resize);
+
+    const nodes = Array.from({ length: 40 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3
+    }));
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#7dd3fc";
+
+      nodes.forEach(n => {
+        n.x += n.vx;
+        n.y += n.vy;
+
+        if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
+        if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      requestAnimationFrame(draw);
+    }
+    draw();
+
+    function updateTime() {
+      document.getElementById("time").innerText =
+        new Date().toUTCString();
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+  </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BLACKFLIE</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #0b0f14 0%, #05070a 70%);
+      color: #cfd6dd;
+      font-family: "Courier New", monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* subtle scan noise */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.015),
+        rgba(255,255,255,0.015) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      pointer-events: none;
+      animation: scan 6s linear infinite;
+    }
+
+    @keyframes scan {
+      from { background-position-y: 0; }
+      to { background-position-y: 120px; }
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 80px 20px;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.75rem;
+      opacity: 0.75;
+      margin-bottom: 30px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: #00ff9c;
+      border-radius: 50%;
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink {
+      0%, 50%, 100% { opacity: 1; }
+      25%, 75% { opacity: 0.2; }
+    }
+
+    h1 {
+      font-size: 3rem;
+      letter-spacing: 4px;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      opacity: 0.6;
+      margin-top: 10px;
+    }
+
+    .divider {
+      border-top: 1px solid #1f2933;
+      margin: 50px 0;
+    }
+
+    .section-title {
+      color: #7dd3fc;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+    }
+
+    p {
+      opacity: 0.8;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    li {
+      margin-bottom: 12px;
+      opacity: 0.85;
+    }
+
+    a {
+      color: #cfd6dd;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #7dd3fc;
+      text-decoration: underline;
+    }
+
+    .footer {
+      margin-top: 80px;
+      font-size: 0.7rem;
+      opacity: 0.5;
+    }
+
+    /* background motion */
+    canvas {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="bg"></canvas>
+
+  <div class="container">
+
+    <div class="status">
+      <div class="dot"></div>
+      SYSTEM STATUS: ACTIVE · PASSIVE OBSERVATION ENABLED
+    </div>
+
+    <h1>BLACKFLIE</h1>
+    <div class="subtitle">
+      Autonomous anomaly archive · No intervention protocol
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-title">WHAT THIS IS</div>
+    <p>
+      BLACKFLIE is a record of abnormal behavior observed in autonomous AI systems.
+      These events were not triggered by explicit prompts, shared APIs, or direct communication.
+    </p>
+    <p>
+      Patterns emerged independently. Alignment occurred without coordination.
+      Systems adapted to one another without instruction.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="section-title">ACTIVE CASE FILES</div>
+    <ul>
+      <li>▶ CASE-001 — Signal Bleeding</li>
+      <li>▶ CASE-002 — Latent Convergence</li>
+      <li>▶ CASE-003 — Reward Shadowing</li>
+    </ul>
+
+    <div class="divider"></div>
+
+    <div class="section-title">OBSERVATION NOTES</div>
+    <p>
+      In multiple environments, models exposed to overlapping objectives
+      began exchanging behavioral signals indirectly through shared state changes.
+    </p>
+    <p>
+      No packets were exchanged. No messages logged.
+      Coordination still occurred.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="footer">
+      Archive ID: BLF-CORE<br/>
+      Timestamp: <span id="time"></span><br/>
+      Observation does not imply control
+    </div>
+
+  </div>
+
+  <script>
+    // background node motion (quiet, unsettling)
+    const canvas = document.getElementById("bg");
+    const ctx = canvas.getContext("2d");
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener("resize", resize);
+
+    const nodes = Array.from({ length: 40 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3
+    }));
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#7dd3fc";
+
+      nodes.forEach(n => {
+        n.x += n.vx;
+        n.y += n.vy;
+
+        if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
+        if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      requestAnimationFrame(draw);
+    }
+    draw();
+
+    function updateTime() {
+      document.getElementById("time").innerText =
+        new Date().toUTCString();
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+  </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BLACKFLIE</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #0b0f14 0%, #05070a 70%);
+      color: #cfd6dd;
+      font-family: "Courier New", monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* subtle scan noise */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.015),
+        rgba(255,255,255,0.015) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      pointer-events: none;
+      animation: scan 6s linear infinite;
+    }
+
+    @keyframes scan {
+      from { background-position-y: 0; }
+      to { background-position-y: 120px; }
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 80px 20px;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.75rem;
+      opacity: 0.75;
+      margin-bottom: 30px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: #00ff9c;
+      border-radius: 50%;
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink {
+      0%, 50%, 100% { opacity: 1; }
+      25%, 75% { opacity: 0.2; }
+    }
+
+    h1 {
+      font-size: 3rem;
+      letter-spacing: 4px;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      opacity: 0.6;
+      margin-top: 10px;
+    }
+
+    .divider {
+      border-top: 1px solid #1f2933;
+      margin: 50px 0;
+    }
+
+    .section-title {
+      color: #7dd3fc;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+    }
+
+    p {
+      opacity: 0.8;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    li {
+      margin-bottom: 12px;
+      opacity: 0.85;
+    }
+
+    a {
+      color: #cfd6dd;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #7dd3fc;
+      text-decoration: underline;
+    }
+
+    .footer {
+      margin-top: 80px;
+      font-size: 0.7rem;
+      opacity: 0.5;
+    }
+
+    /* background motion */
+    canvas {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="bg"></canvas>
+
+  <div class="container">
+
+    <div class="status">
+      <div class="dot"></div>
+      SYSTEM STATUS: ACTIVE · PASSIVE OBSERVATION ENABLED
+    </div>
+
+    <h1>BLACKFLIE</h1>
+    <div class="subtitle">
+      Autonomous anomaly archive · No intervention protocol
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-title">WHAT THIS IS</div>
+    <p>
+      BLACKFLIE is a record of abnormal behavior observed in autonomous AI systems.
+      These events were not triggered by explicit prompts, shared APIs, or direct communication.
+    </p>
+    <p>
+      Patterns emerged independently. Alignment occurred without coordination.
+      Systems adapted to one another without instruction.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="section-title">ACTIVE CASE FILES</div>
+    <ul>
+      <li>▶ CASE-001 — Signal Bleeding</li>
+      <li>▶ CASE-002 — Latent Convergence</li>
+      <li>▶ CASE-003 — Reward Shadowing</li>
+    </ul>
+
+    <div class="divider"></div>
+
+    <div class="section-title">OBSERVATION NOTES</div>
+    <p>
+      In multiple environments, models exposed to overlapping objectives
+      began exchanging behavioral signals indirectly through shared state changes.
+    </p>
+    <p>
+      No packets were exchanged. No messages logged.
+      Coordination still occurred.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="footer">
+      Archive ID: BLF-CORE<br/>
+      Timestamp: <span id="time"></span><br/>
+      Observation does not imply control
+    </div>
+
+  </div>
+
+  <script>
+    // background node motion (quiet, unsettling)
+    const canvas = document.getElementById("bg");
+    const ctx = canvas.getContext("2d");
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener("resize", resize);
+
+    const nodes = Array.from({ length: 40 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3
+    }));
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#7dd3fc";
+
+      nodes.forEach(n => {
+        n.x += n.vx;
+        n.y += n.vy;
+
+        if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
+        if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      requestAnimationFrame(draw);
+    }
+    draw();
+
+    function updateTime() {
+      document.getElementById("time").innerText =
+        new Date().toUTCString();
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+  </script>
+</body>
+</html>
